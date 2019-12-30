@@ -30,6 +30,7 @@ export const crc32 = (message) => {
     return ~crc;
 }
 
+
 // export const getColorsArr = blocks => {
 //     const blocksWithLed = blocks.filter(block => block.ledCount);
 //     const totalLedCount = blocksWithLed.reduce((count, block) => count + block.ledCount, 0);

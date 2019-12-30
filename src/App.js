@@ -3,6 +3,9 @@ import { ConfigBlock } from './config-block';
 import { CanvasRenderer } from './canvas-renderer';
 import { crc32 } from './utils';
 
+let seed = Date.now();
+const uid = () => "u" + seed++;
+
 const createConfig = () => ({
     ledCount: 0,
     rgb: {
@@ -12,16 +15,39 @@ const createConfig = () => ({
     },
     brightness: 50,
     gradient: true,
-    secondColor: null
+    secondColor: null,
+    key: uid()
 });
 
-const configKeys = [0, 1, 2, 3, 4, 5, 6, 7];
-
-const initialState = Object.fromEntries(configKeys.map(key => [key, createConfig()]));
+const initialState = {
+    0: createConfig(),
+    length: 1
+};
 
 const reducer = (state, action) => {
     const idx = action.idx;
     switch (action.type) {
+        case "ADD":
+            return {
+                ...state,
+                [state.length]: createConfig(),
+                length: state.length + 1
+            };
+        case "REMOVE":
+            const newState = {length: state.length - 1};
+            for (const key in state) {
+                const num = Number(key);
+                if (num === idx) {
+                    continue;
+                }
+                if (num > idx) {
+                    newState[num - 1] = state[key]; 
+                } else {
+                    newState[num] = state[key];
+                }
+            }
+
+            return newState;
         case "SET_LED_COUNT":
             return {
                 ...state,
@@ -70,29 +96,35 @@ const reducer = (state, action) => {
 const rootStyle = {
     display: "flex",
     flexWrap: "wrap"
-}
+};
+
+const addStyle = {
+    width: "25%",
+    height: "160px"
+};
 
 function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const arrayGetterRef = useRef(null);
 
-    const configBlocks = configKeys.map(key =>
+    const blocks = Array.from(state);
+
+    const configBlocks = blocks.map((block, idx) =>
         <ConfigBlock
-            key={key}
-            rgb={state[key].rgb}
-            setRgb={(rgb) => dispatch({type: "SET_RGB", payload: rgb, idx: key})}
-            brightness={state[key].brightness}
-            setBrightness={(brightness) => dispatch({type: "SET_BRIGHTNESS", payload: brightness, idx: key})}
-            ledCount={state[key].ledCount}
-            setLedCount={(ledCount) => dispatch({type: "SET_LED_COUNT", payload: ledCount, idx: key})}
-            gradient={state[key].gradient}
-            setGradient={(gradient) => dispatch({type: "SET_GRADIENT", payload: gradient, idx: key})}
-            secondColor={state[key].secondColor}
-            setSecondColor={(secondColor) => dispatch({type: "SET_SECOND_COLOR", payload: secondColor, idx: key})}
+            key={block.key}
+            rgb={block.rgb}
+            setRgb={(rgb) => dispatch({type: "SET_RGB", payload: rgb, idx})}
+            brightness={block.brightness}
+            setBrightness={(brightness) => dispatch({type: "SET_BRIGHTNESS", payload: brightness, idx})}
+            ledCount={block.ledCount}
+            setLedCount={(ledCount) => dispatch({type: "SET_LED_COUNT", payload: ledCount, idx})}
+            gradient={block.gradient}
+            setGradient={(gradient) => dispatch({type: "SET_GRADIENT", payload: gradient, idx})}
+            secondColor={block.secondColor}
+            setSecondColor={(secondColor) => dispatch({type: "SET_SECOND_COLOR", payload: secondColor, idx})}
+            onRemove={() => dispatch({type: "REMOVE", idx})}
         />
     );
-
-    const blocks = configKeys.map(key => state[key]);
 
     const computeResult = () => {
         const colors = arrayGetterRef.current().join(" ");
@@ -103,9 +135,10 @@ function App() {
         <div>
             <div style={rootStyle}>
                 {configBlocks}
+                <button style={addStyle} onClick={() => dispatch({type: "ADD"})}>ADD</button>
             </div>
             <CanvasRenderer blocks={blocks} arrayGetterRef={arrayGetterRef} />
-            <button onClick={() => console.log(computeResult())}>get colors arr</button>
+            <button onClick={() => console.log(computeResult())}>SEND</button>
         </div>
     );
 }

@@ -62,6 +62,10 @@ export const CanvasRenderer = ({
 
         widthRef.current = position;
         arrayGetterRef.current = () => {
+            if (position === 0) {
+                return [];
+            }
+
             const imageData = ctx.getImageData(0, 0, position, HEIGHT).data;
             const result = [];
 

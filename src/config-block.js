@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {ColorPicker} from './colorpicker';
 
 const rootDivStyle = {
     height: "160px",
     width: "25%",
+    minWidth: "240px",
     boxSizing: "border-box",
-    border: "1px solid black"
+    border: "1px solid black",
+    position: "relative"
 };
 
 const inputWidthStyle = {
@@ -21,7 +23,13 @@ const labelWrapperDivStyle = {
 
 const labelStyle = {
     width: "80px"
-}
+};
+
+const removeStyle = {
+    position: "absolute",
+    top: "0",
+    right: "0"
+};
 
 const Label = ({label}) => <div style={labelStyle}>{label}:</div>;
 
@@ -37,7 +45,10 @@ export const ConfigBlock = ({
     setGradient,
     secondColor,
     setSecondColor,
+    onRemove
 }) => {
+    const colorpickerBlockRef = useRef(null);
+    const colorpickerSecondBlockRef = useRef(null);
 
     const wrappedSetLedCount = e => {
         const val = Number(e.target.value) || 0;
@@ -67,9 +78,9 @@ export const ConfigBlock = ({
                 <Label label="led count" />
                 <input style={inputWidthStyle} type="number" value={ledCount} onChange={wrappedSetLedCount} />
             </div>
-            <div style={labelWrapperDivStyle}>
+            <div style={labelWrapperDivStyle} ref={colorpickerBlockRef}>
                 <Label label="color" />
-                <ColorPicker rgb={rgb} setRgb={setRgb} />
+                <ColorPicker rgb={rgb} setRgb={setRgb} blockRef={colorpickerBlockRef} />
             </div>
             <div style={labelWrapperDivStyle}>
                 <Label label="brightness" />
@@ -79,11 +90,12 @@ export const ConfigBlock = ({
                 <Label label="gradient" />
                 <input type="checkbox" checked={gradient} onChange={() => setGradient(!gradient)} />
             </div>
-            {gradient && <div style={labelWrapperDivStyle}>
+            {gradient && <div style={labelWrapperDivStyle} ref={colorpickerSecondBlockRef}>
                 <Label label="second" />
-                <ColorPicker rgb={secondColor || {r: 0, g: 0, b: 0}} setRgb={setSecondColor} />
+                <ColorPicker rgb={secondColor || {r: 0, g: 0, b: 0}} setRgb={setSecondColor} blockRef={colorpickerSecondBlockRef} />
                 <button onClick={() => setSecondColor(null)}>clear</button>
             </div>}
+            <button onClick={onRemove} style={removeStyle}>remove</button>
         </div>
     );
 }
