@@ -128,8 +128,8 @@ function App() {
     );
 
     const send = () => {
-        const colors = arrayGetterRef.current().join(" ");
-        const result = crc32(colors) + " " + colors;
+        const colors = arrayGetterRef.current().map(v => String(v).padStart(32, "0")).join(" ");
+        const result = String(crc32(colors)).padStart(32, "0") + " " + colors;
         setAppResult(result);
 
         if (window.SEND_RESULT) {
