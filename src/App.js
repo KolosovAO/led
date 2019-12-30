@@ -126,9 +126,10 @@ function App() {
         />
     );
 
-    const computeResult = () => {
+    const send = () => {
         const colors = arrayGetterRef.current().join(" ");
-        return crc32(colors) + " " + colors;
+        const result = crc32(colors) + " " + colors;
+        console.log(result);
     }
     
     return (
@@ -138,7 +139,7 @@ function App() {
                 <button style={addStyle} onClick={() => dispatch({type: "ADD"})}>ADD</button>
             </div>
             <CanvasRenderer blocks={blocks} arrayGetterRef={arrayGetterRef} />
-            <button onClick={() => console.log(computeResult())}>SEND</button>
+            <button onClick={send}>SEND</button>
         </div>
     );
 }
