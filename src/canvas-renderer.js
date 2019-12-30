@@ -42,7 +42,7 @@ export const CanvasRenderer = ({
 
             if (gradient) {
                 const nextBlockWithLed = blocksWithLed[i + 1] || blocksWithLed[0];
-                const gradientStyle = ctx.createLinearGradient(position, 0, position + ledCount, HEIGHT);
+                const gradientStyle = ctx.createLinearGradient(position, 0, position + ledCount, 0);
 
                 gradientStyle.addColorStop(0, blockStyle);
                 if (secondColor) {
