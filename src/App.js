@@ -1,8 +1,7 @@
-import React, {useReducer} from 'react';
+import React, { useReducer, useRef } from 'react';
 import { ConfigBlock } from './config-block';
 import { CanvasRenderer } from './canvas-renderer';
-import { getColorsArr } from './utils';
-
+import { crc32 } from './utils';
 
 const createConfig = () => ({
     ledCount: 0,
@@ -75,6 +74,7 @@ const rootStyle = {
 
 function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
+    const arrayGetterRef = useRef(null);
 
     const configBlocks = configKeys.map(key =>
         <ConfigBlock
@@ -93,14 +93,19 @@ function App() {
     );
 
     const blocks = configKeys.map(key => state[key]);
+
+    const computeResult = () => {
+        const colors = arrayGetterRef.current().join(" ");
+        return crc32(colors) + " " + colors;
+    }
     
     return (
         <div>
             <div style={rootStyle}>
                 {configBlocks}
             </div>
-            <CanvasRenderer blocks={blocks}/>
-            <button onClick={() => console.log(getColorsArr(blocks))}>get colors arr</button>
+            <CanvasRenderer blocks={blocks} arrayGetterRef={arrayGetterRef} />
+            <button onClick={() => console.log(computeResult())}>get colors arr</button>
         </div>
     );
 }

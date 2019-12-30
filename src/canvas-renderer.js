@@ -1,71 +1,90 @@
 import React, {useEffect, useRef} from 'react';
-import { getRealRGB } from './utils';
+import { getRealRGB, rgbToUint32 } from './utils';
 
-const WIDTH = window.innerWidth;
 const HEIGHT = 60;
-const canvasStyle = {
-    width: WIDTH + "px",
-    height: HEIGHT + "px",
-    marginTop: "12px"
+const rootStyle = {
+    height: HEIGHT + 24 + "px",
+    marginTop: "12px",
+    width: "100%",
+    overflowX: "scroll",
+    overflowY: "hidden",
 };
+
+const canvasStyle = {
+    padding: "0 8px 0 8px"
+}
 
 const rgbToStyle = ({r, g, b}) => `rgb(${r},${g},${b})`;
 
 export const CanvasRenderer = ({
-    blocks
+    blocks,
+    arrayGetterRef
 }) => {
     const canvasRef = useRef(null);
+    const widthRef = useRef(0);
+
+    const totalLedCount = blocks.reduce((total, block) => total + block.ledCount, 0);
 
     useEffect(() => {
         const ctx = canvasRef.current.getContext("2d");
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx.clearRect(0, 0, widthRef.current, HEIGHT);
 
         const blocksWithLed = blocks.filter(block => block.ledCount);
-        const totalLedCount = blocksWithLed.reduce((count, block) => count + block.ledCount, 0);
-
-        if (totalLedCount === 0) {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-            return;
-        }
+        const brightnessArr = [];
 
         let position = 0;
         for (let i=0; i<blocksWithLed.length; i++) {
             const {gradient, secondColor, rgb, brightness, ledCount} = blocksWithLed[i];
 
-            const nextBlockWithLed = blocksWithLed[i + 1] || blocksWithLed[0];
+            brightnessArr.push(...Array(ledCount).fill(brightness));
 
-            const c1 = getRealRGB(rgb, brightness);
+            const blockStyle = rgbToStyle(rgb);
 
-            const c2 = gradient
-                ? secondColor
-                    ? getRealRGB(secondColor, brightness)
-                    : getRealRGB(nextBlockWithLed.rgb, nextBlockWithLed.brightness)
-                : c1;
+            if (gradient) {
+                const nextBlockWithLed = blocksWithLed[i + 1] || blocksWithLed[0];
+                const gradientStyle = ctx.createLinearGradient(position, 0, position + ledCount, HEIGHT);
 
-            const width = Math.floor(ledCount / totalLedCount * WIDTH);
+                gradientStyle.addColorStop(0, blockStyle);
+                if (secondColor) {
+                    gradientStyle.addColorStop(0.5, rgbToStyle(secondColor));
+                }
+                gradientStyle.addColorStop(1, rgbToStyle(nextBlockWithLed.rgb));
 
-            const c1Style = rgbToStyle(c1);
-            const c2Style = rgbToStyle(c2);
-
-            if (c1Style === c2Style) {
-                ctx.fillStyle = c1Style;
-                ctx.fillRect(position, 0, position + width, HEIGHT);
-            } else {
-                const gradientStyle = ctx.createLinearGradient(position, 0, position + width, HEIGHT);
-                gradientStyle.addColorStop(0, c1Style);
-                gradientStyle.addColorStop(1, c2Style);
                 ctx.fillStyle = gradientStyle;
-                ctx.fillRect(position, 0, position + width, HEIGHT);
+                ctx.fillRect(position, 0, position + ledCount, HEIGHT);
+            } else {
+                ctx.fillStyle = blockStyle;
+                ctx.fillRect(position, 0, position + ledCount, HEIGHT);
             }
 
-            position += width;
+            position += ledCount;
         }
 
+        widthRef.current = position;
+        arrayGetterRef.current = () => {
+            const imageData = ctx.getImageData(0, 0, position, HEIGHT).data;
+            const result = [];
 
+            const step = 4 * HEIGHT;
 
-    }, [canvasRef, blocks]);
+            for (let i=0; i<imageData.length; i += step) {
+                const r = imageData[i];
+                const g = imageData[i + 1];
+                const b = imageData[i + 2];
 
-    return <canvas width={WIDTH} height={HEIGHT} style={canvasStyle} ref={canvasRef}></canvas>
+                const realRGB = getRealRGB({r, g, b}, brightnessArr[result.length]);
+                const uint32 = rgbToUint32(realRGB);
+                result.push(uint32);
+            }
+
+            return result;
+        }
+
+    }, [canvasRef, blocks, arrayGetterRef]);
+
+    return (
+        <div style={rootStyle}>
+            <canvas style={canvasStyle} width={totalLedCount} height={HEIGHT} ref={canvasRef}></canvas>
+        </div>
+    );
 };
