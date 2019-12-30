@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from 'react';
+import React, { useReducer, useRef, useState } from 'react';
 import { ConfigBlock } from './config-block';
 import { CanvasRenderer } from './canvas-renderer';
 import { crc32 } from './utils';
@@ -106,6 +106,7 @@ const addStyle = {
 function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const arrayGetterRef = useRef(null);
+    const [appResult, setAppResult] = useState("");
 
     const blocks = Array.from(state);
 
@@ -129,7 +130,11 @@ function App() {
     const send = () => {
         const colors = arrayGetterRef.current().join(" ");
         const result = crc32(colors) + " " + colors;
-        console.log(result);
+        setAppResult(result);
+
+        if (window.SEND_RESULT) {
+            window.SEND_RESULT(result);
+        }
     }
     
     return (
@@ -140,6 +145,7 @@ function App() {
             </div>
             <CanvasRenderer blocks={blocks} arrayGetterRef={arrayGetterRef} />
             <button onClick={send}>SEND</button>
+            <div>{appResult}</div>
         </div>
     );
 }
