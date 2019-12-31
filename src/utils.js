@@ -1,6 +1,6 @@
 const brightnessToCoeff = brightness => (brightness - 50) / 50;
 
-const getRealColor = (color, brightness) => Math.floor(color * (0.5 + 0.5 * brightnessToCoeff(brightness)));
+const getRealColor = (color, brightness) => Math.floor(color * (0.15 + 0.05 * brightnessToCoeff(brightness)));
 
 export const rgbToUint32 = ({r, g, b}) => r + (g << 8) + (b << 16);
 

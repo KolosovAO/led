@@ -66,7 +66,7 @@ export const CanvasRenderer = ({
                 return [];
             }
 
-            const imageData = ctx.getImageData(0, 0, position, HEIGHT).data;
+            const imageData = ctx.getImageData(0, 0, position, HEIGHT/2).data;
             const result = [];
 
             const step = 4 * HEIGHT;
