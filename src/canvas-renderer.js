@@ -66,12 +66,10 @@ export const CanvasRenderer = ({
                 return [];
             }
 
-            const imageData = ctx.getImageData(0, 0, position, HEIGHT).data;
+            const imageData = ctx.getImageData(0, 0, position, 1).data;
             const result = [];
 
-            const step = 4 * HEIGHT;
-
-            for (let i=0; i<imageData.length; i += step) {
+            for (let i=0; i<imageData.length; i += 4) {
                 const r = imageData[i];
                 const g = imageData[i + 1];
                 const b = imageData[i + 2];
