@@ -105,13 +105,30 @@ const rootStyle = {
 
 const addStyle = {
     width: "25%",
-    height: "160px",
-    minWidth: "240px"
+    minWidth: "240px",
+    height: "201px"
 };
 
 const buttonBlockStyle = {
     height: "48px",
+    width: "100%",
     display: "flex"
+};
+
+const textareaStyle = {
+    flex: 1,
+    boxSizing: "border-box"
+};
+
+const emptyStyle = {
+    flex: 1,
+    background: "rgba(0, 0, 0, 0.7)"
+};
+
+const rootAppStyle = {
+    display: "flex",
+    flexDirection: "column",
+    height: window.innerHeight + "px"
 };
 
 function App() {
@@ -167,19 +184,20 @@ function App() {
     }
     
     return (
-        <div>
-            <div style={rootStyle}>
-                {configBlocks}
-                <button style={addStyle} onClick={() => dispatch({type: "ADD"})}>ADD</button>
-            </div>
+        <div style={rootAppStyle}>
             <CanvasRenderer blocks={blocks} arrayGetterRef={arrayGetterRef} />
             <div style={buttonBlockStyle}>
                 <button onClick={send}>SEND</button>
                 <button onClick={copy}>COPY TO CLIPBOARD</button>
                 <button onClick={save}>SAVE AS</button>
                 <button onClick={load}>LOAD</button>
+                <div style={emptyStyle}></div>
             </div>
-            <div>{appResult}</div>
+            <div style={rootStyle}>
+                {configBlocks}
+                <button style={addStyle} onClick={() => dispatch({type: "ADD"})}>ADD</button>
+            </div>
+            {appResult && <textarea style={textareaStyle} readOnly value={appResult}></textarea>}
         </div>
     );
 }

@@ -19,3 +19,16 @@ button:hover {
     opacity: 0.6;
     cursor: pointer;
 }
+
+.michael-round {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    transition: opacity ease-in-out 0.2s;
+}
+
+.michael-round:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}

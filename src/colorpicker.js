@@ -24,15 +24,11 @@ export const ColorPicker = ({
 
     const clickableArea = useMemo(() => {
         const style = {
-            background: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
-            width: "36px",
-            height: "36px",
-            borderRadius: "50%",
-            cursor: "pointer"
+            background: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
         };
 
 
-        return <div style={style} onClick={() => setIsOpened(!isOpened)}></div>
+        return <div className="michael-round" style={style} onClick={() => setIsOpened(!isOpened)}></div>
 
     }, [rgb, isOpened]);
 

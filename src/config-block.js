@@ -2,12 +2,11 @@ import React, {useRef} from 'react';
 import {ColorPicker} from './colorpicker';
 
 const rootDivStyle = {
-    height: "160px",
     width: "25%",
     minWidth: "240px",
     boxSizing: "border-box",
-    borderRight: "1px solid black",
-    borderBottom: "1px solid black",
+    borderRight: "1px solid rgba(0, 0, 0, 0.7)",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.7)",
     position: "relative"
 };
 
@@ -19,7 +18,8 @@ const labelWrapperDivStyle = {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: "2px"
+    paddingTop: "2px",
+    height: "38px"
 };
 
 const labelStyle = {
@@ -82,7 +82,7 @@ export const ConfigBlock = ({
         <div style={rootDivStyle}>
             <div style={labelWrapperDivStyle}>
                 <Label label="led count" />
-                <input style={inputWidthStyle} type="number" value={ledCount} onChange={wrappedSetLedCount} />
+                <input style={inputWidthStyle} type="number" value={ledCount || ""} onChange={wrappedSetLedCount} />
             </div>
             <div style={labelWrapperDivStyle} ref={colorpickerBlockRef}>
                 <Label label="color" />
@@ -90,11 +90,11 @@ export const ConfigBlock = ({
             </div>
             <div style={labelWrapperDivStyle}>
                 <Label label="brightness" />
-                <input style={inputWidthStyle} min="0" max="100" type="number" value={brightness} onChange={wrappedSetBrightness} />
+                <input style={inputWidthStyle} min="0" max="100" type="number" value={brightness || ""} onChange={wrappedSetBrightness} />
             </div>
             <div style={labelWrapperDivStyle}>
                 <Label label="gradient" />
-                <input type="checkbox" checked={gradient} onChange={() => setGradient(!gradient)} />
+                <input type="checkbox" checked={gradient || ""} onChange={() => setGradient(!gradient)} />
             </div>
             {gradient && <div style={labelWrapperDivStyle} ref={colorpickerSecondBlockRef}>
                 <Label label="second" />

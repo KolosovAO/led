@@ -3,16 +3,14 @@ import { getRealRGB, rgbToUint32 } from './utils';
 
 const HEIGHT = 60;
 const rootStyle = {
-    height: HEIGHT + 24 + "px",
-    marginTop: "12px",
+    display: "flex",
+    alignItems: "center",
+    padding: "8px",
+    background: "#000",
     width: "100%",
-    overflowX: "scroll",
-    overflowY: "hidden",
+    boxSizing: "border-box",
+    overflowY: "auto"
 };
-
-const canvasStyle = {
-    padding: "0 8px 0 8px"
-}
 
 const rgbToStyle = ({r, g, b}) => `rgb(${r},${g},${b})`;
 
@@ -86,7 +84,7 @@ export const CanvasRenderer = ({
 
     return (
         <div style={rootStyle}>
-            <canvas style={canvasStyle} width={totalLedCount} height={HEIGHT} ref={canvasRef}></canvas>
+            <canvas width={totalLedCount} height={HEIGHT} ref={canvasRef}></canvas>
         </div>
     );
 };
