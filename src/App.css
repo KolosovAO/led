@@ -2,6 +2,7 @@
 
 * {
     font-family: Neucha;
+    font-size: 16px;
 }
 
 button {
@@ -9,7 +10,6 @@ button {
     border: none;
     background-color: rgba(0, 0, 0, 0.7);
     color: #FFFFFF;
-    font-size: 14px;
     padding: 4px;
     min-width: 60px;
     transition: opacity ease-in-out 0.2s;
