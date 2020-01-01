@@ -6,7 +6,8 @@ const rootDivStyle = {
     width: "25%",
     minWidth: "240px",
     boxSizing: "border-box",
-    border: "1px solid black",
+    borderRight: "1px solid black",
+    borderBottom: "1px solid black",
     position: "relative"
 };
 
@@ -22,7 +23,8 @@ const labelWrapperDivStyle = {
 };
 
 const labelStyle = {
-    width: "80px"
+    width: "80px",
+    paddingLeft: "4px"
 };
 
 const removeStyle = {
@@ -54,6 +56,10 @@ export const ConfigBlock = ({
         const val = Number(e.target.value) || 0;
         if (val < 0) {
             setLedCount(0);
+            return;
+        }
+        if (val > 144 * 8) {
+            setLedCount(144 * 8);
             return;
         }
         setLedCount(val);

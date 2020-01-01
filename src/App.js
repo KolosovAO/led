@@ -1,7 +1,8 @@
 import React, { useReducer, useRef, useState } from 'react';
 import { ConfigBlock } from './config-block';
 import { CanvasRenderer } from './canvas-renderer';
-import { crc32 } from './utils';
+import { crc32, loadFromLocalStorage, withLocalStorageSave, saveStateAs, loadState, copyToClipboard } from './utils';
+import "./App.css";
 
 let seed = Date.now();
 const uid = () => "u" + seed++;
@@ -19,7 +20,7 @@ const createConfig = () => ({
     key: uid()
 });
 
-const initialState = {
+const initialState = loadFromLocalStorage() || {
     0: createConfig(),
     length: 1
 };
@@ -27,6 +28,8 @@ const initialState = {
 const reducer = (state, action) => {
     const idx = action.idx;
     switch (action.type) {
+        case "LOAD":
+            return action.payload;
         case "ADD":
             return {
                 ...state,
@@ -93,6 +96,8 @@ const reducer = (state, action) => {
     }
 }
 
+const reducerWithLocalStorageSave = withLocalStorageSave(reducer);
+
 const rootStyle = {
     display: "flex",
     flexWrap: "wrap"
@@ -100,11 +105,17 @@ const rootStyle = {
 
 const addStyle = {
     width: "25%",
-    height: "160px"
+    height: "160px",
+    minWidth: "240px"
+};
+
+const buttonBlockStyle = {
+    height: "48px",
+    display: "flex"
 };
 
 function App() {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducerWithLocalStorageSave, initialState);
     const arrayGetterRef = useRef(null);
     const [appResult, setAppResult] = useState("");
 
@@ -127,14 +138,32 @@ function App() {
         />
     );
 
-    const send = () => {
+    const getResult = () => {
         const colors = arrayGetterRef.current().map(v => String(v).padStart(10, "0")).join(" ");
         const result = String(crc32(colors)).padStart(10, "0") + " " + colors;
+        return result;
+    }
+
+    const send = () => {
+        const result = getResult();
         setAppResult(result);
 
         if (window.SEND_RESULT) {
             window.SEND_RESULT(result);
         }
+    };
+
+    const load = () => {
+        loadState()
+            .then(state => dispatch({type: "LOAD", payload: state}))
+            .catch(() => {});
+    };
+
+    const save = () => saveStateAs(state);
+
+    const copy = () => {
+        const result = getResult();
+        copyToClipboard(result);
     }
     
     return (
@@ -144,7 +173,12 @@ function App() {
                 <button style={addStyle} onClick={() => dispatch({type: "ADD"})}>ADD</button>
             </div>
             <CanvasRenderer blocks={blocks} arrayGetterRef={arrayGetterRef} />
-            <button onClick={send}>SEND</button>
+            <div style={buttonBlockStyle}>
+                <button onClick={send}>SEND</button>
+                <button onClick={copy}>COPY TO CLIPBOARD</button>
+                <button onClick={save}>SAVE AS</button>
+                <button onClick={load}>LOAD</button>
+            </div>
             <div>{appResult}</div>
         </div>
     );

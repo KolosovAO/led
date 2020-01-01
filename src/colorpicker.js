@@ -25,10 +25,10 @@ export const ColorPicker = ({
     const clickableArea = useMemo(() => {
         const style = {
             background: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            cursor: 'pointer'
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            cursor: "pointer"
         };
 
 
